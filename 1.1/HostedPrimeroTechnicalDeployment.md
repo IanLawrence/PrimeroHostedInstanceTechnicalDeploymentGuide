@@ -30,14 +30,14 @@ Boston, MA 02111
 
 This is a snapshot of the deployment document. The latest and greatest
 is maintained along with the Primero source under
-primero/doc/chef\_deploy.md
+primero/doc/chef_deploy.md
 
 Requirements
 ------------
 
 -   A machine to which you have ssh access
 
--   A user on that machine that has passwordless sudo access for the /usr/bin/chef-solo command so that you don't have to login as root (the machine doesn't need to have chef-solo actually installed yet)
+-   A user on that machine that has passwordless sudo access for the `/usr/bin/chef-solo` command so that you don't have to login as root (the machine doesn't need to have chef-solo actually installed yet)
 
 -   Ruby 1.9.3 or higher, Berkshelf 3.2.1 and knife-solo 0.4.2 installed on your local machine (the machine which will launch the deploy)
 
@@ -96,46 +96,45 @@ identifies the certificate authority. To generate the root key with the
 proper encryption:
 
 ```bash
-    $ sudo openssl genrsa -aes256 -out /etc/pki/CA/private/couch\_ca.key
-    4096
+    $ sudo openssl genrsa -aes256 -out /etc/pki/CA/private/couch_ca.key 4096
 
     Enter pass phrase **for** ca.key.pem: secretpassword
     Verifying - Enter pass phrase **for** ca.key.pem: secretpassword
 
-    $ sudo chmod 400 /etc/pki/CA/private/couch\_ca.key
+    $ sudo chmod 400 /etc/pki/CA/private/couch_ca.key
 ```
 
-Open the file /ect/ssl/openssl.cnf. Change the field dir = /etc/pki/CA
-on \[ CA\_default \]. Also make sure the following fields look like
+Open the file `/ect/ssl/openssl.cnf` Change the field `dir = /etc/pki/CA`
+on [ CA_default ]. Also make sure the following fields look like
 this:
 
 
 ```bash
 
-    **\[** usr\_cert **\]**\
-    *\# These extensions are added when 'ca' signs a request.*
-    basicConstraints**=**CA:FALSE
-    keyUsage **=** nonRepudiation, digitalSignature, keyEncipherment
-    nsComment **=** "OpenSSL Generated Certificate"
-    subjectKeyIdentifier**=**hash
-    authorityKeyIdentifier**=**keyid,issuer
+    [ usr_cert ]
+    # These extensions are added when 'ca' signs a request.
+    basicConstraints=CA:FALSE
+    keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+    nsComment = "OpenSSL Generated Certificate"
+    subjectKeyIdentifier=hash
+    authorityKeyIdentifier=keyid,issuer
 
-    **\[** v3\_ca **\]**
-    *\# Extensions for a typical CA*
-    subjectKeyIdentifier**=**hash
-    authorityKeyIdentifier**=**keyid:always,issuer
-    basicConstraints **=** CA:true
-    keyUsage **=** cRLSign, keyCertSign
+    [ v3_ca ]
+    # Extensions for a typical CA
+    subjectKeyIdentifier=hash
+    authorityKeyIdentifier=keyid:always,issuer
+    basicConstraints = CA:true
+    keyUsage = cRLSign, keyCertSign
 ```
 
 To generate the root certificate:
 
 ```bash
-    $ sudo openssl req -new -x509 -days 3650 -key /etc/pki/CA/private/couch\_ca.key -sha256 -extensions v3\_ca -out /etc/pki/CA/certs/couch\_ca.cert
+    $ sudo openssl req -new -x509 -days 3650 -key /etc/pki/CA/private/couch_ca.key -sha256 -extensions v3_ca -out /etc/pki/CA/certs/couch_ca.cert
     $ sudo chmod 444 /etc/pki/CA/certs/ca.cert.pem
 ```
 
-You should set up your own config.cnf file based on your organization's
+You should set up your own `config.cnf` file based on your organization's
 policy and contact information. See the openssl docs for more info on
 how to configure things.
 
@@ -147,30 +146,30 @@ individual CouchDB instances. Go to the root directory of your CA.
 To create a new key:
 
 ```bash
-    openssl genrsa -out < HOST\_NAME>.key 2048
+    openssl genrsa -out < HOST_NAME>.key 2048
 ```
 
 To create a Certificate Signing Request with a key:
 
 ```bash
-    openssl req -new -key <HOST\_NAME>.key -out <HOST\_NAME>.csr -config config.cnf
+    openssl req -new -key <HOST_NAME>.key -out <HOST_NAME>.csr -config config.cnf
 ```
 
 To sign the CSR and make a Cert using the root CA key:
 
 ```bash
-    openssl ca -in <HOST\_NAME>.csr -config config.cnf
+    openssl ca -in <HOST_NAME>.csr -config config.cnf
 ```
 
 All clients using HTTPS must have trust the root cert in the file
-couch\_ca.crt.
+couch_ca.crt.
 
 You must configure the node file (see below) to provision this new CA
 certificate onto the deployed server so that it can verify remote
 connections upon replication. You can either overwrite the file
-cookbook/files/couch\_ca.crt with your own root cert or you can move the
+`cookbook/files/couch_ca.crt` with your own root cert or you can move the
 cert into another file in that directory and set the
-primero.couchdb.root\_ca\_cert\_source attribute in the node file to
+primero.couchdb.root_ca_cert_source attribute in the node file to
 point to that new file. See below for more information on this
 attribute.
 
@@ -185,40 +184,42 @@ Primero. You can put the node file anywhere you like on your system.
 
 The following attributes are of special interest for configuration:
 
--   primero.server\_hostname (required): The DNS hostname of the server. The site should be accessed with this host name.
+-   primero.server_hostname (required): The DNS hostname of the server. The site should be accessed with this host name.
 
--   primero.git.revision (default: master): The commit id/tag/branch name to deploy
+-   `primero.git.revision` (default: master): The commit id/tag/branch name to deploy
 
--   primero.deploy\_key (required): An ssh private key that is configured in the Quoin bitbucket repo (under deployment keys) to allow read-only access to the code
+-   `primero.deploy_key` (required): An ssh private key that is configured in the Quoin bitbucket repo (under deployment keys) to allow read-only access to the code
 
--   primero.couchdb.password (required): The CouchDB password for the admin user--this will replace any existing password
+-   `primero.couchdb.password` (required): The CouchDB password for the admin user--this will replace any existing password
 
--   primero.couchdb.ssl.cert (required): The CouchDB SSL certificate, formatted to replace all newlines with '\\n'
+-   `primero.couchdb.ssl.cert` (required): The CouchDB SSL certificate, formatted to replace all newlines with '\n'
 
--   primero.couchdb.ssl.key (required): The CouchDB SSL secret key, formatted to replace all newlines with '\\n'
+-   `primero.couchdb.ssl.key` (required): The CouchDB SSL secret key, formatted to replace all newlines with '\n'
 
--   primero.ssl.cert (required): The app SSL certificate, formatted to replace all newlines with '\\n'--the hostname in this cert should match the primero.server\_hostname value.
+-   `primero.ssl.cert` (required): The app SSL certificate, formatted to replace all newlines with '\n'--the hostname in this cert should match the primero.server_hostname value.
 
--   primero.ssl.key (required): The app SSL secret key, formatted to replace all newlines with '\\n'
+-   `primero.ssl.key` (required): The app SSL secret key, formatted to replace all newlines with '\n'
 
--   primero.couchdb.root\_ca\_cert\_source (default: couch\_ca.crt): The source path of the Couch CA certificate that is used to verify other CouchDB instances when syncing. This is a path is relative to the files/default directory in this repo. You should add the CA cert there.
+-   `primero.couchdb.root_ca_cert_source` (default: couch_ca.crt): The source path of the Couch CA certificate that is used to verify other CouchDB instances when syncing. This is a path is relative to the files/default directory in this repo. You should add the CA cert there.
 
 You set them by specifying them in JSON in the node file. For example,
 if you want to set the hostname to *example.com*, just put the following
 in your node file:
 
-{\
-"primero"**:** {\
-... other attibutes ...\
-"server\_hostname"**:** "example.com",\
-... other attibutes ...\
-},\
-"run\_list"**:** \[ "recipe\[primero::default\]" \]\
+```bash
+{
+  "primero": {
+    ... other attibutes ...
+    "server_hostname": "example.com",
+    ... other attibutes ...
+  },
+  "run_list": [ "recipe[primero::default]" ]
 }
 
+````
 #### **Runlist**
 
-You should set your runlist to \[ "recipe\[primero::default\]" \] for
+You should set your runlist to [ "recipe[primero::default]" ] for
 any standard deploy.
 
 Deployment
@@ -229,12 +230,12 @@ commands from the cookbook folder of the repo (cookbook directory must
 be able to be read by other users):
 
 ```bash
-    $ ssh USER@APP\_HOST 'which chef-solo' **||** knife solo prepare --bootstrap-version**=**11.10.4 USER@APP\_HOST\
-    $ knife solo cook USER@APP\_HOST NODE\_FILE
+    $ ssh USER@APP_HOST 'which chef-solo' || knife solo prepare --bootstrap-version=11.10.4 USER@APP_HOST
+    $ knife solo cook USER@APP_HOST NODE_FILE
  ```
 
-Replacing USER with the remote user, APP\_HOST with the remote machine
-host, and NODE\_FILE with the Chef node json file to use for this
+Replacing USER with the remote user, APP_HOST with the remote machine
+host, and NODE_FILE with the Chef node json file to use for this
 deploy. It will take a few minutes to run to completion.
 
 Ports and Firewalls
