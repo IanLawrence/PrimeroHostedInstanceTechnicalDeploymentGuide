@@ -135,7 +135,7 @@ certificate onto the deployed server so that it can verify remote
 connections upon replication. You can either overwrite the file
 `cookbook/files/couch_ca.crt` with your own root cert or you can move the
 cert into another file in that directory and set the
-primero.couchdb.root_ca_cert_source attribute in the node file to
+`primero.couchdb.root_ca_cert_source` attribute in the node file to
 point to that new file. See below for more information on this
 attribute.
 
@@ -150,7 +150,7 @@ Primero. You can put the node file anywhere you like on your system.
 
 The following attributes are of special interest for configuration:
 
--   primero.server_hostname (required): The DNS hostname of the server. The site should be accessed with this host name.
+-   `primero.server_hostname` (required): The DNS hostname of the server. The site should be accessed with this host name.
 
 -   `primero.git.revision` (default: master): The commit id/tag/branch name to deploy
 
@@ -166,7 +166,7 @@ The following attributes are of special interest for configuration:
 
 -   `primero.ssl.key` (required): The app SSL secret key, formatted to replace all newlines with '\n'
 
--   `primero.couchdb.root_ca_cert_source` (default: couch_ca.crt): The source path of the Couch CA certificate that is used to verify other CouchDB instances when syncing. This is a path is relative to the files/default directory in this repo. You should add the CA cert there.
+-   `primero.couchdb.root_ca_cert_source` (default: `couch_ca.crt`): The source path of the Couch CA certificate that is used to verify other CouchDB instances when syncing. This is a path is relative to the files/default directory in this repo. You should add the CA cert there.
 
 You set them by specifying them in JSON in the node file. For example,
 if you want to set the hostname to *example.com*, just put the following
@@ -185,7 +185,7 @@ in your node file:
 ````
 #### **Runlist**
 
-You should set your runlist to [ "recipe[primero::default]" ] for
+You should set your runlist to `[ "recipe[primero::default]" ]` for
 any standard deploy.
 
 Deployment
