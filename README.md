@@ -1,16 +1,13 @@
-![](1.1/img/image03.png)
+![](img/image03.png)
 ========================================================================
 
-**Primero Hosted Instance Technical Deployment**
+**Primero Hosted Instance Technical Deployment Guide**
 
-**Release 1.1**
-
-March 2015
 
 
 ***Prepared for:***
 
-![](1.1/img/image05.png)
+![](img/image05.png)
 ======================================================================================
 
 3 United Nations Plaza
@@ -19,7 +16,7 @@ New York, NY 10017
 
 > ***Prepared by:***
 
-![](1.1/img/image04.png)
+![](img/image04.png)
 ======================================================================================
 
 <span style="font-variant:small-caps;">Quoin</span>, Inc.
